@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # ─── BAZA DANYCH ──────────────────────────────
+  db:
+    image: postgres:17
+    container_name: simplyfin-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"                    # dostęp z Twojego PC (np. pgAdmin)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # dane przetrwają restart
+      - ./Database:/docker-entrypoint-initdb.d:ro
+    networks:
+      - simplyfin-network
+    healthcheck:                       # sprawdza czy baza jest gotowa
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── BACKEND (FastAPI) ────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: simplyfin-backend
+    environment:
+      # Adres bazy — "db" to nazwa serwisu powyżej (Docker sam to rozwiąże)
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "8000:8000"                    # dostęp z browser: localhost:8000
+    depends_on:
+      db:
+        condition: service_healthy     # backend startuje TYLKO gdy baza jest gotowa
+    networks:
+      - simplyfin-network
+
+  # ─── FRONTEND (React) ─────────────────────────
+  frontend:
+    build:
+      context: ./SimplyFin
+      dockerfile: Dockerfile
+    container_name: simplyfin-frontend
+    ports:
+      - "80:80"                        # dostęp z browser: localhost (lub localhost:80)
+    depends_on:
+      - backend
+    networks:
+      - simplyfin-network
+
+# ─── DANE I SIECI ───────────────────────────────
+volumes:
+  postgres_data:                       # persystentne przechowywanie danych bazy
+
+networks:
+  simplyfin-network:
+    driver: bridge                     # kontainery mogą się ze sobą komunikować
