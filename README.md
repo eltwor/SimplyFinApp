@@ -65,7 +65,7 @@ The project also served as a personal deep-dive into full-stack development: des
 ## 🚀 Getting Started
  
 ### Prerequisites
-- (Docker)[https://www.docker.com/products/docker-desktop] and Docker Compose
+- [Docker](https://www.docker.com/products/docker-desktop) and Docker Compose
 - (Optional) Node.js and Python if you want to run without Docker
  
 ### Clone the repository
@@ -86,15 +86,11 @@ The backend API documentation is available at http://localhost:8000/docs
 
 ## Future Improvements
 
-    - Email notifications for registration and recurring payments.
-
-    - Integration with actual bank APIs to import transactions automatically.
-
-    - AI‑powered suggestions for savings goals or spending cuts.
-
-    - More advanced financial projections and what‑if scenarios.
-
-    - Mobile app (React Native) version.
+- Email notifications for registration and recurring payments.
+- Integration with actual bank APIs to import transactions automatically.
+- AI‑powered suggestions for savings goals or spending cuts.
+- More advanced financial projections and what‑if scenarios.
+- Mobile app (React Native) version.
 
 ## Author
  
